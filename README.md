@@ -15,17 +15,20 @@ Este es un challenge para la empresa Stechs que consiste en construir una pagina
 
 Es necesario tener instalado node version **^18** . Si no lo tenemos instalado podes bajarlo de [nodejs.org](https://nodejs.org/).
 
+
 ### Install NPM
 
 NPM es un manejador de paquetes de **Node** . Si no lo tenemos instalado todavia podemos hacerlo desde [npmjs.com](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm). 
 
-### Clone the Repository
+
+### Clone the repository
 
 ```bash
 git clone git@github.com:pedroabruno/stechs-challenge-fe.git
 ```
 
-### Install Node App Dependencies
+
+### Install node app dependencies
 
 Ir a la raiz del proyecto y utilizando **NPM** :
 
@@ -34,16 +37,30 @@ npm install
 ```
 Este comando bajara e instalara las dependencias del proyecto entre las cuales estan las libraries de Next
 
-## Running the app locally 
+
+## Running the app using cloud backend
 
 Por defecto la app corre contra un backend en **Node** hosteado en **Vercel** y con una db en **Mongo** hosteada en **Mongo Atlas** . 
 
 Para levantar la app localmente correr el siguiente comando.
 
+
+## Running the app using sing local backend 
+
+Para utilizar el backend local se debe : 
+    
+    -clonar el siguiente repositorio : [repo-backend](https://github.com/pedroabruno/stechs-challenge-be)
+
+    -levantar el backend localmente y copiar la URL(ruta+puerto)
+
+    -en el archivo src/api/axios.ts modificar la variable `URL_BASE` por la URL del backend
+
+
 ```bash
 npm run dev
 ```
 Por defecto se levanta una instancia de la app en el puerto 3000. Utilizar la siguiente URL :  [localhost:3000](http://localhost:3000)
+
 
 ## Build
 
@@ -55,7 +72,8 @@ npm run build
 
 De esta forma nos aseguramos que la app esta lista para ser deployada.
 
-### Run tests
+
+## Run tests
 
 Para correr los tests se utiliza el comando :
 
@@ -63,21 +81,13 @@ Para correr los tests se utiliza el comando :
 npm run test
 ```
 
-### Deploy to Vercel
+
+## Deploy to Vercel
 
 Para realizar un deploy a Vercel solamente es necesario actualizar el branch main del repositorio. Es decir que con cada push que realizamos a main, Vercel automaticamente se ocupara de obtener la ultima version del branch y realizar el deploy.
 
 [Open Webpage](https://stechs-challenge-fe.vercel.app/)
 
-## Using a local backend 
-
-Para utilizar el backend local se debe : 
-    
-    -clonar el siguiente repositorio : [repo-backend](https://github.com/pedroabruno/stechs-challenge-be)
-
-    -levantar el backend localmente y copiar la URL(ruta+puerto)
-
-    -en el archivo src/api/axios.ts modificar la variable `URL_BASE` por la URL del backend
 
 ## Changes and Features
 
