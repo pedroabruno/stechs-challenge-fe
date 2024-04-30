@@ -1,11 +1,9 @@
 'use client'
-import { Inter } from "next/font/google";
 import "./globals.css";
-import logo from "../resources/images/serialCables.png";
+import logo from "../resources/images/tpLink.png";
+
 import {Providers} from "./providers";
 import { usePathname } from "next/navigation";
-const inter = Inter({ subsets: ["latin"] });
-
 
 export default function RootLayout({
   children,
@@ -18,16 +16,13 @@ export default function RootLayout({
     <html lang="en" className="dark">
         <body>
         <Providers>
-            <div className="flex bg-gray-500 gap-0 items-center">
+            <div className="flex bg-gray-500/15 gap-0 items-center">
                 <img src={logo.src} alt="logo" className="p-2 w-20 h-14" />
-                <div className="flex">
+                <div className="flex m-auto">
                     {tabs.map(t =>  (<Tab key={t.link} name={t.name} link={t.link} selected={t.link === path}/>))}
                 </div>
             </div>
             {children}
-            <footer className="text-white py-10 justify-center flex ">
-                Done by Pedro
-            </footer>
         </Providers>
         </body>
     </html>
@@ -37,7 +32,7 @@ export default function RootLayout({
 function Tab(props : {name:string, link:string, selected:boolean}){
     const {name, link, selected} = props
     return(
-        <div className={"px-4 " + (selected ? 'font-bold text-purple-950' : 'text-white') }>
+        <div className={"px-4 text-white " + (selected && 'font-bold') }>
             <a className="relative" href={link}>{name}</a>
         </div>
     )

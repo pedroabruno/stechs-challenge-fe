@@ -16,7 +16,7 @@ export function getCableModems(page : number, filters?: any){
 }
 
 export function createCableModems(data: CableModem){
-    axios({
+    return axios({
         method: 'POST',
         url: URL_BASE + 'cableModems',
         data: data   
@@ -24,7 +24,7 @@ export function createCableModems(data: CableModem){
 }
 
 export function putCableModem(id: string, data: CableModem){
-    axios({
+    return axios({
         method: 'PUT',
         url: URL_BASE + 'cableModems/'+ id,
         data: data     

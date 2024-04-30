@@ -19,35 +19,60 @@ import {
     Button,
     useDisclosure,
     Pagination,
-    Divider, Input, DatePicker, RadioGroup, Radio , Select, SelectItem,
+    Divider, Input, DatePicker, RadioGroup, Radio , Select, SelectItem, Spinner, Code
   } from "@nextui-org/react";
 import {parseZonedDateTime} from '@internationalized/date';
 import { CableModem } from "api/dataTypes";
+import {formatDate} from 'scripts/utils'
 
 export default function Page(){
     const[cableModems, setCableModems] = useState([])
     const[page, setPage] = useState(1)
     const[nameFilter, setNameFilter] = useState('')
     const[statusFilter, setStatusFilter] = useState('')
+    const[pageLimit, setPageLimit] = useState(1)
+    const[notification, setNotification] = useState({isMessage:false, isError:false, message:''})
+
     useEffect(() => {
         const response = setTimeout(() => {
-            getCableModems(page, {...(nameFilter && {name : nameFilter}), ...(statusFilter && {status: statusFilter})}).then(response => setCableModems(response.data))
+            getCableModems(page, {...(nameFilter && {name : nameFilter}), ...(statusFilter && {status: statusFilter})}).then(response => {setCableModems(response.data.documents); setPageLimit(1 + Math.trunc(response.data.count/10))})
         }, 1000)
         return () => clearTimeout(response)
     }, [nameFilter, statusFilter, page])
-    return(
-        <div className="flex">
-            <div className="pr-4 bg-gray-900 rounded-lg m-3">
-                    <NameFilter onValueChange={setNameFilter}/>
-                    <StatusFilter onValueChange={setStatusFilter}/>
-            </div>
-            <div>
-                <AddCableModemSection/>
-                <Divider className="my-4" />
-                <CableModemTable cableModems={cableModems} page={page} setPage={setPage}/>
-            </div>
-        </div>
+    
+    useEffect(() => {
+        const response = setTimeout(() => {
+            setNotification({isMessage:false, isError:false, message:''})
+        }, 6000)
+        return () => clearTimeout(response)
+    }, [notification])
 
+    useEffect(() => {
+        getCableModems(page, {...(nameFilter && {name : nameFilter}), ...(statusFilter && {status: statusFilter})}).then(response => {setCableModems(response.data.documents); setPageLimit(1 + Math.trunc(response.data.count/10))})
+    }, [notification])
+
+
+    return(
+        <div>
+            <section className="flex">
+                <div className="pr-4 bg-neutral-800 rounded-lg m-3 min-h-96">
+                        <NameFilter onValueChange={setNameFilter}/>
+                        <StatusFilter onValueChange={setStatusFilter}/>
+                </div>
+                <div>
+                    <AddCableModemSection setNotification={setNotification}/>
+                    <Divider className="my-4" />
+                    {
+                        cableModems 
+                            ?  <CableModemTable cableModems={cableModems} page={page} setPage={setPage} pageLimit={pageLimit}/> 
+                            : <div className="h-20"><Spinner size='lg' label="Loading..." color="secondary" className="w-10 h-10"/></div> 
+                    }
+                </div>
+            </section>
+            <section>
+                {notification.isMessage && (<><Button color={notification.isError ? 'danger' : 'success'} className="capitalize">{notification.isError ? 'Error' : '✓'}</Button><Code color={notification.isError ? 'danger' : 'success'}>{notification.message}</Code></>)}
+            </section>
+        </div>
     )
 }
 
@@ -65,19 +90,20 @@ function NameFilter(props:{onValueChange:(value:string)=>void}){
     return(<Input variant="bordered" label="Filter by name" className="text-white" onValueChange={(value)=>{onValueChange(value)}}/>)
 }
 
-function AddCableModemSection(){
+function AddCableModemSection(props:{setNotification:(data:any)=>void}){
+    const {setNotification} = props
     return(
         <section>
                 <div className="flex text-white font-bold">
                     <h1 className="text-2xl"> Cable Modems </h1>
-                    <NewCableModemButton/>
+                    <NewCableModemButton setNotification={setNotification}/>
                 </div>
         </section>
     )
 }
 
-function CableModemTable(props:{cableModems,page,setPage}){
-    const {cableModems,page,setPage} = props
+function CableModemTable(props:{cableModems: CableModem[],page: number, pageLimit:number, setPage:(page:number)=>void}){
+    const {cableModems,page,pageLimit, setPage} = props
     return (
         <>
             <Table aria-label="Example static collection table">
@@ -85,11 +111,11 @@ function CableModemTable(props:{cableModems,page,setPage}){
                     {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                 </TableHeader>
                 <TableBody items={cableModems}>
-                    {(item) => (
+                    {(item:any) => (
                         <TableRow key={item._id}>
                             {(columnKey) => columnKey === 'actions' 
                                 ? (<TableCell className="text-white flex gap-4 items-center">
-                                        <ActionButton displayName='edit' id={item._id} name={item.name} description={item.description} date={item.validSince} status={item.status} tags={item.tags} color='primary' onClick={(b)=>{putCableModem(item._id, b)}} type={CABLE_MODEM_BUTTON_TYPE.EDIT.value} />
+                                        <ActionButton displayName='edit' id={item._id} name={item.name} description={item.description} date={item.validSince} status={item.status} tags={item.tags} color='primary' onClick={(b:any)=>{putCableModem(item._id, b)}} type={CABLE_MODEM_BUTTON_TYPE.EDIT.value} />
                                         <ActionButton displayName='X' id={item._id} color='danger' onClick={()=>{deleteCableModem(item._id)}} type={CABLE_MODEM_BUTTON_TYPE.DELETE.value}/>
                                     </TableCell>) 
                                 : (<TableCell className="text-white">{item[columnKey]}</TableCell>)}
@@ -97,12 +123,12 @@ function CableModemTable(props:{cableModems,page,setPage}){
                     )}
                 </TableBody>
             </Table>
-            <Pagination className="p-4 justify-center flex" total={10} initialPage={page}  onChange={(page)=>{setPage(page)}}/>
+            <Pagination className="p-4 justify-center flex" total={pageLimit} initialPage={page}  onChange={(page)=>{setPage(page)}}/>
         </>
     )
 }
 
-function ActionButton(props:{displayName:string, id:string, color:string, onClick: any, type: string, name?:string, description?:string, date?:string, status?:string, tags?:string[]}){
+function ActionButton(props:{displayName:string, id:string, color:'primary'|'danger', onClick: any, type: string, name?:string, description?:string, date?:string, status?:string, tags?:string[]}){
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
     const {displayName, id, color, onClick, type, name, description, date, status, tags} = props
     return(
@@ -116,17 +142,24 @@ function ActionButton(props:{displayName:string, id:string, color:string, onClic
     )
 }
 
-function NewCableModemButton(){
+function NewCableModemButton(props:{setNotification:(data:any)=>void}){
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const {setNotification} = props
+    const onConfirm = (v:any)=>{
+        createCableModems(v)
+            .then(r=>{if(r.status === 201 ){setNotification({isMessage:true, isError:false, message:'New Item Added'})}else{setNotification({isMessage:true, isError:true, message:'Error Adding the item'})}})
+            .catch(e => {setNotification({isMessage:true, isError:true, message:'Error Adding the item'})})
+    }
+
     return(
         <div className="ml-auto">
             <Button size="sm" color='primary' className=" font-bold" onPress={onOpen}>&#43; nuevo Cable Modem</Button>
-            <CableModemModal title='Nuevo Cable Modem' name='' description='' date='' status={CABLE_MODEM_STATUS.ACTIVE.value} tags={[]} isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange} onConfirm={createCableModems}/>
+            <CableModemModal title='Nuevo Cable Modem' name='' description='' date='' status={CABLE_MODEM_STATUS.ACTIVE.value} tags={[]} isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange} onConfirm={onConfirm}/>
         </div>
     )
 }
 
-function CableModemModal(props:{title:string, name?:string, description?:string, date?:string, status?:string, tags?:string[], isOpen:boolean, onOpen:()=>void, onOpenChange:()=>void, onConfirm:(data:CableModem)=>void }){
+function CableModemModal(props:{title:string, name?:string, description?:string, date?:string, status?:string, tags?:string[], isOpen:boolean, onOpen:()=>void, onOpenChange:()=>void, onConfirm:(data:any)=>void }){
     const {title, name, description, date, status, tags, isOpen, onOpen, onOpenChange, onConfirm} = props;
     let fechaTest = parseZonedDateTime('2022-11-07T00:45[America/Los_Angeles]');
     const[nameSelected, setNameSelected] = useState(name ?? '')
@@ -153,7 +186,7 @@ function CableModemModal(props:{title:string, name?:string, description?:string,
                                 ))}
                             </Select>
                             <RadioGroup className="text-red" label="Status" orientation="horizontal" value={statusSelected} onValueChange={(value)=>{setStatusSelected(value)}}>
-                                {cableModemStatusList.map(s=>(<Radio value={s.key} className="text-red">{s.label}</Radio>))}
+                                {cableModemStatusList.map(s=>(<Radio key={s.key} value={s.key} className="text-red">{s.label}</Radio>))}
                             </RadioGroup>
                         </ModalBody>
                     <ModalFooter>
