@@ -19,11 +19,11 @@ import {
     Button,
     useDisclosure,
     Pagination,
-    Divider, Input, DatePicker, RadioGroup, Radio , Select, SelectItem, Spinner, Code
+    Divider, Input, DatePicker, RadioGroup, Radio , Select, SelectItem, Spinner, Code, Chip
   } from "@nextui-org/react";
 import {parseZonedDateTime} from '@internationalized/date';
 import { CableModem } from "api/dataTypes";
-import {formatDate} from 'scripts/utils'
+import {formatDate, getStatusColor} from 'scripts/utils'
 
 export default function Page(){
     const[cableModems, setCableModems] = useState([])
@@ -55,7 +55,7 @@ export default function Page(){
     return(
         <div>
             <section className="flex">
-                <div className="pr-4 bg-neutral-800 rounded-lg m-3 min-h-96">
+                <div className="p-4 bg-neutral-800 rounded-lg m-3 min-h-96">
                         <NameFilter onValueChange={setNameFilter}/>
                         <StatusFilter onValueChange={setStatusFilter}/>
                 </div>
@@ -87,7 +87,7 @@ function StatusFilter(props:{onValueChange:(value:string)=>void}){
 
 function NameFilter(props:{onValueChange:(value:string)=>void}){
     const {onValueChange} = props
-    return(<Input variant="bordered" label="Filter by name" className="text-white" onValueChange={(value)=>{onValueChange(value)}}/>)
+    return(<Input variant="bordered" label="Filter by name" className="text-white py-9" onValueChange={(value)=>{onValueChange(value)}}/>)
 }
 
 function AddCableModemSection(props:{setNotification:(data:any)=>void}){
@@ -118,7 +118,10 @@ function CableModemTable(props:{cableModems: CableModem[],page: number, pageLimi
                                         <ActionButton displayName='edit' id={item._id} name={item.name} description={item.description} date={item.validSince} status={item.status} tags={item.tags} color='primary' onClick={(b:any)=>{putCableModem(item._id, b)}} type={CABLE_MODEM_BUTTON_TYPE.EDIT.value} />
                                         <ActionButton displayName='X' id={item._id} color='danger' onClick={()=>{deleteCableModem(item._id)}} type={CABLE_MODEM_BUTTON_TYPE.DELETE.value}/>
                                     </TableCell>) 
-                                : (<TableCell className="text-white">{item[columnKey]}</TableCell>)}
+                                : columnKey === 'status' 
+                                    ? (<TableCell className="text-white"><Chip variant="faded" color={getStatusColor(item[columnKey])}>{item[columnKey]}</Chip></TableCell>)
+                                    : (<TableCell className="text-white">{item[columnKey]}</TableCell>)
+                            }
                         </TableRow>
                     )}
                 </TableBody>
@@ -135,7 +138,7 @@ function ActionButton(props:{displayName:string, id:string, color:'primary'|'dan
         <div>
             <Button size="sm" onPress={onOpen} color={color}>{displayName}</Button>
             {type === CABLE_MODEM_BUTTON_TYPE.EDIT.value 
-                ? (<CableModemModal title='Editar Cable Modem' name={name} description={description} date={date} status={status} tags={tags} isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange} onConfirm={onClick}/>) 
+                ? (<CableModemModal title='Editar Cable Modem' name={name} description={description} date={date} status={status} tags={tags} isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange} onConfirm={onClick} type={'edit'}/>) 
                 : (<DeleteModal isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange} onClick={onClick}/>)
             }
         </div>
@@ -150,17 +153,16 @@ function NewCableModemButton(props:{setNotification:(data:any)=>void}){
             .then(r=>{if(r.status === 201 ){setNotification({isMessage:true, isError:false, message:'New Item Added'})}else{setNotification({isMessage:true, isError:true, message:'Error Adding the item'})}})
             .catch(e => {setNotification({isMessage:true, isError:true, message:'Error Adding the item'})})
     }
-
     return(
         <div className="ml-auto">
             <Button size="sm" color='primary' className=" font-bold" onPress={onOpen}>&#43; nuevo Cable Modem</Button>
-            <CableModemModal title='Nuevo Cable Modem' name='' description='' date='' status={CABLE_MODEM_STATUS.ACTIVE.value} tags={[]} isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange} onConfirm={onConfirm}/>
+            <CableModemModal title='Nuevo Cable Modem' name='' description='' date='' status={CABLE_MODEM_STATUS.ACTIVE.value} tags={[]} isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange} onConfirm={onConfirm} type={'new'}/>
         </div>
     )
 }
 
-function CableModemModal(props:{title:string, name?:string, description?:string, date?:string, status?:string, tags?:string[], isOpen:boolean, onOpen:()=>void, onOpenChange:()=>void, onConfirm:(data:any)=>void }){
-    const {title, name, description, date, status, tags, isOpen, onOpen, onOpenChange, onConfirm} = props;
+function CableModemModal(props:{title:string, name?:string, description?:string, date?:string, status?:string, tags?:string[], isOpen:boolean, onOpen:()=>void, onOpenChange:()=>void, onConfirm:(data:any)=>void , type:string}){
+    const {title, name, description, date, status, tags, isOpen, onOpen, onOpenChange, onConfirm,type} = props;
     let fechaTest = parseZonedDateTime('2022-11-07T00:45[America/Los_Angeles]');
     const[nameSelected, setNameSelected] = useState(name ?? '')
     const[descriptionSelected, setDescriptionSelected] = useState(description)
@@ -190,13 +192,14 @@ function CableModemModal(props:{title:string, name?:string, description?:string,
                             </RadioGroup>
                         </ModalBody>
                     <ModalFooter>
+                    {type === 'edit' && (<Button color="danger" variant="light" onPress={onClose} className="mr-36"> Delete </Button>)}
                     <Button color="default" variant="light" onPress={onClose}>
-                        Cancelar
+                        Cancel
                     </Button>
                     <Button color='success' onPress={()=> {
                             onConfirm(cableModem);
                             onClose()}}>
-                        Aceptar
+                        Confirm
                     </Button>
               </ModalFooter>
             </div>
