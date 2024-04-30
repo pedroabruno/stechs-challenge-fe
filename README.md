@@ -1,14 +1,13 @@
 # Stechs-Challenge
 
-![GitHub package.json version](src/resources/images/appScreenshot.png)
+![GitHub package.json version]()
 
 Este es un challenge para la empresa Stechs que consiste en construir una pagina utilizando como base Next/React. Para la pagina ademas se utilizan las siguientes tecnologias :
-    
+
     -Para los componentes se utiliza la library NextUI. 
     -Para los tests se utiliza la library Jest.
     -Para el hosting de la app se utiliza Vercel.
     -Para el backend de la app se decidio utilizar un backend en Node y una base de datos en Mongo.
-
 
 ![Stechs-Challenge](src/resources/images/appScreenshot.png)
 
@@ -63,16 +62,14 @@ De esta forma nos aseguramos que la app esta lista para ser deployada.
 Para correr los tests se utiliza el comando :
 
 ```bash
-yarn make
+npm run test
 ```
 
 ### Deploy to Vercel
 
-Build the Electron application by using this command:
+Para realizar un deploy a Vercel solamente es necesario actualizar el branch main del repositorio. Es decir que con cada push que realizamos a main, Vercel automaticamente se ocupara de obtener la ultima version del branch y realizar el deploy.
 
-```bash
-npm run test
-```
+[Open Webpage](https://stechs-challenge-fe.vercel.app/)
 
 ## Using a local backend 
 
