@@ -1,11 +1,11 @@
 # Stechs-Challenge
 
-Este es un challenge para la empresa Stechs que consiste en construir una pagina utilizando como base Next/React. Para la pagina ademas se utilizan las siguientes tecnologias :
+Este es un challenge para la empresa Stechs que consiste en construir una pagina utilizando como base Next/React. Para la pagina ademas se utilizan las siguientes tecnologias
 
-    -Para los componentes se utiliza la library NextUI. 
-    -Para los tests se utiliza la library Jest.
-    -Para el hosting de la app se utiliza Vercel.
-    -Para el backend de la app se decidio utilizar un backend en Node y una base de datos en Mongo.
+    - Para los componentes se utiliza la library NextUI. 
+    - Para los tests se utiliza la library Jest.
+    - Para el hosting de la app se utiliza Vercel.
+    - Para el backend de la app se decidio utilizar un backend en Node y una base de datos en Mongo.
 
 ![Stechs-Challenge](src/resources/images/appScreenshot.png)
 
@@ -47,13 +47,13 @@ Para levantar la app localmente correr el siguiente comando.
 
 ## Running the app using sing local backend 
 
-Para utilizar el backend local se debe : 
+Para utilizar el backend local se debe
     
-    -clonar el siguiente repositorio : [repo-backend](https://github.com/pedroabruno/stechs-challenge-be)
+    - clonar el siguiente repositorio : [repo-backend](https://github.com/pedroabruno/stechs-challenge-be)
 
-    -levantar el backend localmente y copiar la URL(ruta+puerto)
+    - levantar el backend localmente y copiar la URL(ruta+puerto)
 
-    -en el archivo src/api/axios.ts modificar la variable `URL_BASE` por la URL del backend
+    - en el archivo src/api/axios.ts modificar la variable `URL_BASE` por la URL del backend
 
 
 ```bash
@@ -91,13 +91,13 @@ Para realizar un deploy a Vercel solamente es necesario actualizar el branch mai
 
 ## Changes and Features
 
--Se cambia el filtrado de los items de un input y un botton a un input que utilizando debounce para el filtrado de items
+- Se cambia el filtrado de los items de un input y un botton a un input que utilizando debounce para el filtrado de items
 
 
 ## Roadmap
 
--Los strings pasaran a cargarse de un archivo de configuracion dependiendo del idioma elegido
--se agregara light mode
+- Los strings pasaran a cargarse de un archivo de configuracion dependiendo del idioma elegido
+- Se agregara light mode
 
 ## Contributors
 
