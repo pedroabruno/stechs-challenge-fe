@@ -1,7 +1,5 @@
 # Stechs-Challenge
 
-![GitHub package.json version]()
-
 Este es un challenge para la empresa Stechs que consiste en construir una pagina utilizando como base Next/React. Para la pagina ademas se utilizan las siguientes tecnologias :
 
     -Para los componentes se utiliza la library NextUI. 
