@@ -38,8 +38,8 @@ export const CABLE_MODEM_BUTTON_TYPE = {
 
 export const CABLE_MODEM_STATUS = {
     ACTIVE:{value:'Active'},
+    PROVISION:{value:'Provision'},
     SUSPENDED:{value:'Suspended'},
-    PROVISION:{value:'Provision'}
 }
 
 export const cableModemStatusList = [
