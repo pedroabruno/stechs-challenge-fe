@@ -1,12 +1,11 @@
 import {ZonedDateTime} from '@internationalized/date';
-import {CABLE_MODEM_STATUS} from 'constants/constants' 
+import {CABLE_MODEM_STATUS} from 'src/constants/constants' 
 
 export function formatDate(date: ZonedDateTime): string{
     return (date.day + '-' + date.month + '-' + date.year).toString();
 }
 
 export function getStatusColor(statusId:string):'success'|'warning'|'danger'|'default'{
-    console.log(statusId)
     switch(statusId){
         case CABLE_MODEM_STATUS.ACTIVE.value :
             return 'success'

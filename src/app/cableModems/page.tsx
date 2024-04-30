@@ -1,16 +1,14 @@
 "use client"
 import { useEffect, useState } from "react";
-import {getCableModems, createCableModems, deleteCableModem, putCableModem} from "api/axios"
-import { cableModemTableColumns, cableModemStatusList, cableModemTagList, CABLE_MODEM_BUTTON_TYPE, CABLE_MODEM_STATUS }  from 'constants/constants';
+import {getCableModems, createCableModems, deleteCableModem, putCableModem} from "src/api/axios"
+import { cableModemTableColumns, cableModemStatusList, cableModemTagList, CABLE_MODEM_BUTTON_TYPE, CABLE_MODEM_STATUS }  from 'src/constants/constants';
 import {
     Table,
     TableHeader,
     TableBody,
     TableColumn,
     TableRow,
-    TableCell
-  } from "@nextui-org/table";
-import {
+    TableCell,
     Modal, 
     ModalContent, 
     ModalHeader, 
@@ -22,8 +20,8 @@ import {
     Divider, Input, DatePicker, RadioGroup, Radio , Select, SelectItem, Spinner, Code, Chip
   } from "@nextui-org/react";
 import {parseZonedDateTime} from '@internationalized/date';
-import { CableModem } from "api/dataTypes";
-import {formatDate, getStatusColor} from 'scripts/utils'
+import { CableModem } from "src/api/dataTypes";
+import {formatDate, getStatusColor} from 'src/scripts/utils'
 
 export default function Page(){
     const[cableModems, setCableModems] = useState([])

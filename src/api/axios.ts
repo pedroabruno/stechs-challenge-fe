@@ -1,5 +1,5 @@
 import axios from "axios"
-import {CableModem} from "api/dataTypes"
+import {CableModem} from "src/api/dataTypes"
 
 const URL_BASE = 'https://stechs-be.vercel.app/'
 
