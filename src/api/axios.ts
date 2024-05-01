@@ -27,10 +27,17 @@ export function putCableModem(id: string, data: CableModem){
     return axios({
         method: 'PUT',
         url: URL_BASE + 'cableModems/'+ id,
-        data: data     
+        data: data
     })
 }
 
 export function deleteCableModem(id: string){
     axios.delete(URL_BASE+'cableModems/'+id);
+}
+
+export function getCableModemById(id:string){
+    return axios({
+        method: 'GET',
+        url: URL_BASE + 'cableModems/'+id,
+    })
 }
