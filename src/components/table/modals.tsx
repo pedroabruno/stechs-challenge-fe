@@ -16,7 +16,7 @@ import {
 import routerHardCoded from "src/resources/images/router.png";
 import { useEffect, useState } from "react";
 
-export function DetailedItemModal(props:{cableModem:CableModem, isModalOpen:boolean, onOpenChange:()=>void, onConfirm:()=>void}){
+export function DetailedItemModal(props:{cableModem:CableModem, isModalOpen:boolean, onOpenChange:()=>void, onConfirm:()=>any}){
     const {cableModem, isModalOpen, onOpenChange, onConfirm} = props;
 
     //Obtengo la data del BE solamente por el challenge, sin embargo no la estoy usando ya que en cableModem tengo todo lo que necesito
@@ -26,6 +26,7 @@ export function DetailedItemModal(props:{cableModem:CableModem, isModalOpen:bool
     },[])
 
     return(
+        <>
         <Modal isOpen={isModalOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {() => (
@@ -51,6 +52,7 @@ export function DetailedItemModal(props:{cableModem:CableModem, isModalOpen:bool
           )}
         </ModalContent>
       </Modal>
+      </>
     )
 }
 
@@ -88,7 +90,7 @@ export function EditItemModal(props:{cableModem?:CableModem, isModalOpen:boolean
     const[nameSelected, setNameSelected] = useState(cableModem?.name ?? '')
     const[descriptionSelected, setDescriptionSelected] = useState(cableModem?.description)
     const[dateSelected, setDateSelected] = useState(fechaTest)
-    const[statusSelected, setStatusSelected] = useState(cableModem?.status ?? 'Available')
+    const[statusSelected, setStatusSelected] = useState(cableModem?.status ?? 'Active')
     const[tagsSelected, setTagsSelected] = useState(cableModem?.tags ?? [])
     return(
         <Modal isOpen={isModalOpen} onOpenChange={onOpenChange}>

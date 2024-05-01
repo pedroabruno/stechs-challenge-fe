@@ -5,7 +5,7 @@ import Home from '../../src/app/page'
 describe('Main page', () => {
   it('renders a heading', () => {
     render(<Home />)
-    const heading = screen.getByText('HOME')
+    const heading = screen.getByText('Welcome to Cable-Modem')
     expect(heading).toBeInTheDocument()
   })
 })

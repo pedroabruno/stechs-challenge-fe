@@ -5,12 +5,13 @@ import { getStatusColor, formatDate } from "@/scripts/utils";
 import { parseAbsoluteToLocal } from "@internationalized/date";
 import { Chip, Pagination, Spinner } from "@nextui-org/react";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DeleteItemModal, DetailedItemModal, EditItemModal } from "src/components/table/modals";
 import { ActionButton, CreateItemButton } from  "src/components/table/buttons";
+import toast, { Toaster } from 'react-hot-toast';
 
-export function CableModemTable(props:{cableModems: CableModem[],page: number, pageLimit:number, setPage:(page:number)=>void}){
-    const {cableModems,page,pageLimit, setPage} = props
+export function CableModemTable(props:{cableModems: CableModem[],page: number, pageLimit:number, setPage:(page:number)=>void, setIsDataUpdated:(page:boolean)=>void, notify:(promise:any)=>void}){
+    const {cableModems,page,pageLimit, setPage, setIsDataUpdated, notify} = props
     const [selectedItem, setSelectedItem] = useState<CableModem>({_id: 'defaultId',name: 'Name'});
     const [isDeleteItemModalOpen, setIsDeleteItemModalOpen] = useState(false)
     const [isDetailedItemModalOpen, setIsDetailedItemModalOpen] = useState(false)
@@ -18,9 +19,9 @@ export function CableModemTable(props:{cableModems: CableModem[],page: number, p
     return (
         <div className="min-w-[768px] max-w-[768px]">
 
-            {isDetailedItemModalOpen && <DetailedItemModal isModalOpen={isDetailedItemModalOpen} onOpenChange={()=>{setIsDetailedItemModalOpen(v=>!v)}} onConfirm={()=>{deleteCableModem(selectedItem._id)}} cableModem={selectedItem}  />}
-            {isDeleteItemModalOpen && <DeleteItemModal isModalOpen={isDeleteItemModalOpen} onOpenChange={()=>{setIsDeleteItemModalOpen(v=>!v)}} onConfirm={()=>{deleteCableModem(selectedItem._id)}}/> }
-            {isEditItemModalOpen && <EditItemModal isModalOpen={isEditItemModalOpen} onOpenChange={()=>{setIsEditItemModalOpen(v=>!v)}} cableModem={selectedItem} onEdit={putCableModem} mode="edit"/>}
+            {isDetailedItemModalOpen && <DetailedItemModal isModalOpen={isDetailedItemModalOpen} onOpenChange={()=>{setIsDetailedItemModalOpen(v=>!v)}} onConfirm={()=>{notify(deleteCableModem(selectedItem._id));setIsDataUpdated(false); setPage(1)}} cableModem={selectedItem}  />}
+            {isDeleteItemModalOpen && <DeleteItemModal isModalOpen={isDeleteItemModalOpen} onOpenChange={()=>{setIsDeleteItemModalOpen(v=>!v)}} onConfirm={()=>{notify(deleteCableModem(selectedItem._id));setIsDataUpdated(false); setPage(1)}}/> }
+            {isEditItemModalOpen && <EditItemModal isModalOpen={isEditItemModalOpen} onOpenChange={()=>{setIsEditItemModalOpen(v=>!v)}} cableModem={selectedItem} onEdit={(id, value)=>{notify(putCableModem(id,value));setIsDataUpdated(false)}} mode="edit"/>}
 
             <Table isStriped aria-label="" selectionMode="single" >
                 <TableHeader columns={cableModemTableColumns}>
@@ -42,25 +43,17 @@ export function CableModemTable(props:{cableModems: CableModem[],page: number, p
                     )}
                 </TableBody>
             </Table>
-            <Pagination className="p-4 justify-center flex" total={pageLimit} initialPage={page}  onChange={(page)=>{setPage(page)}}/>
+            <Pagination className="p-4 justify-center flex" total={pageLimit} initialPage={page}  onChange={(page)=>{setPage(page)}} page={page}/>
         </div>
     )
 }
 
-export function AddCableModemSection(props:{setNotification:(data:any)=>void}){
-    const {setNotification} = props
+export function AddCableModemSection(props:{setIsDataUpdated:(data:any)=>void}){
+    const {setIsDataUpdated} = props
     const [isEditItemModalOpen, setIsEditItemModalOpen] = useState(false)
-    const [selectedItem, setSelectedItem] = useState<CableModem>({_id: 'defaultId',name: 'Name'});
-
-    const onConfirm = (v:any)=>{
-        createCableModems(v)
-            .then(r=>{if(r.status === 201 ){setNotification({isMessage:true, isError:false, message:'New Item Added'})}else{setNotification({isMessage:true, isError:true, message:'Error Adding the item'})}})
-            .catch(e => {setNotification({isMessage:true, isError:true, message:'Error Adding the item'})})
-    }
-
     return(
         <section>
-                {isEditItemModalOpen && <EditItemModal isModalOpen={isEditItemModalOpen} onOpenChange={()=>{setIsEditItemModalOpen(v=>!v)}} onCreate={createCableModems} mode='create'/>}
+                {isEditItemModalOpen && <EditItemModal isModalOpen={isEditItemModalOpen} onOpenChange={()=>{setIsEditItemModalOpen(v=>!v)}} onCreate={(v)=>{createCableModems(v);setIsDataUpdated(false)}} mode='create'/>}
                 <div className="flex text-white font-bold">
                     <h1 className="text-2xl"> Cable Modems </h1>
                     <CreateItemButton onClick={()=>{setIsEditItemModalOpen(v=>!v)}}/>
@@ -80,7 +73,7 @@ export function CableModemSkeletonTable(){
             <TableColumn>Valid Since</TableColumn>
             <TableColumn>Actions</TableColumn>
             </TableHeader>
-            <TableBody emptyContent={<Spinner size='lg' label="Loading..." color="secondary" className="w-10 h-10"/>}>{[]}</TableBody>
+            <TableBody emptyContent={'No items ...'}>{[]}</TableBody>
             </Table>
         </div>
     )

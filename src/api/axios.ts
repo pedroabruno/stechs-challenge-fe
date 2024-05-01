@@ -32,7 +32,7 @@ export function putCableModem(id: string, data: CableModem){
 }
 
 export function deleteCableModem(id: string){
-    axios.delete(URL_BASE+'cableModems/'+id);
+    return axios.delete(URL_BASE+'cableModems/'+id);
 }
 
 export function getCableModemById(id:string){

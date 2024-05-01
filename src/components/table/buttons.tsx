@@ -1,10 +1,4 @@
-import { createCableModems } from "@/api/axios";
-import { CABLE_MODEM_BUTTON_TYPE, CABLE_MODEM_STATUS } from "@/constants/constants";
-import {
-    Button,
-    useDisclosure,
-  } from "@nextui-org/react";
-import { EditItemModal} from "src/components/table/modals";
+import {Button} from "@nextui-org/react";
 
 export function ActionButton(props:{displayName:string, color:'primary'|'danger', onClick: any}){
     const {displayName, color, onClick} = props
