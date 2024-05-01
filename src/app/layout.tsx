@@ -1,7 +1,7 @@
 'use client'
 import "./globals.css";
 import {Image} from "@nextui-org/react";
-import logo from "src/resources/images/tpLink.png";
+import logo from "src/resources/images/logoBlackPearl.jpg";
 import {tabs} from "src/constants/constants"
 import {Providers} from "./providers";
 import { usePathname } from "next/navigation";
@@ -18,7 +18,10 @@ export default function RootLayout({
         <body>
         <Providers>
             <div className="flex bg-gray-500/5 gap-0 items-center">
-                <Link className="relative" href={'/'}><Image src={logo.src} alt="logo" className="p-2 w-20 h-14" /></Link>
+                <Link className="relative flex" href={'/'}>
+                    <Image src={logo.src} alt="logo" className="p-2 w-18 h-14 " />
+                    <div className="text-white m-auto">Cable-Modem</div>
+                </Link>
                 <div className="flex m-auto">
                     {tabs.map(t =>  (<Tab key={t.link} name={t.name} link={t.link} selected={t.link === path}/>))}
                 </div>

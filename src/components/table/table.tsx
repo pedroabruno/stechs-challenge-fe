@@ -48,12 +48,12 @@ export function CableModemTable(props:{cableModems: CableModem[],page: number, p
     )
 }
 
-export function AddCableModemSection(props:{setIsDataUpdated:(data:any)=>void}){
-    const {setIsDataUpdated} = props
+export function AddCableModemSection(props:{setIsDataUpdated:(data:any)=>void, notify:(promise:any)=>void}){
+    const {setIsDataUpdated, notify} = props
     const [isEditItemModalOpen, setIsEditItemModalOpen] = useState(false)
     return(
         <section>
-                {isEditItemModalOpen && <EditItemModal isModalOpen={isEditItemModalOpen} onOpenChange={()=>{setIsEditItemModalOpen(v=>!v)}} onCreate={(v)=>{createCableModems(v);setIsDataUpdated(false)}} mode='create'/>}
+                {isEditItemModalOpen && <EditItemModal isModalOpen={isEditItemModalOpen} onOpenChange={()=>{setIsEditItemModalOpen(v=>!v)}} onCreate={(v)=>{notify(createCableModems(v));setIsDataUpdated(false)}} mode='create'/>}
                 <div className="flex text-white font-bold">
                     <h1 className="text-2xl"> Cable Modems </h1>
                     <CreateItemButton onClick={()=>{setIsEditItemModalOpen(v=>!v)}}/>

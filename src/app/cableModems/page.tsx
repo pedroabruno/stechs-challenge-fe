@@ -42,7 +42,7 @@ export default function Page(){
                         <StatusFilter selectedValue={statusFilter} onValueChange={setStatusFilter} setPage={setPage}/>
                 </div>
                 <div>
-                    <AddCableModemSection setIsDataUpdated={setIsDataUpdated}/>
+                    <AddCableModemSection setIsDataUpdated={setIsDataUpdated} notify={notify}/>
                     <Divider className="my-4" />
                     {
                         cableModems.length !== 0
