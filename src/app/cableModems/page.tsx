@@ -17,11 +17,12 @@ import {
     Button,
     useDisclosure,
     Pagination,
-    Divider, Input, DatePicker, RadioGroup, Radio , Select, SelectItem, Spinner, Code, Chip
+    Divider, Input, DatePicker, RadioGroup, Radio , Select, SelectItem, Spinner, Code, Chip, Image
   } from "@nextui-org/react";
-import {parseZonedDateTime} from '@internationalized/date';
+import {parseZonedDateTime, parseAbsoluteToLocal} from '@internationalized/date';
 import { CableModem } from "src/api/dataTypes";
 import {formatDate, getStatusColor} from 'src/scripts/utils'
+import routerHardCoded from "src/resources/images/router.png";
 
 export default function Page(){
     const[cableModems, setCableModems] = useState([])
@@ -30,32 +31,29 @@ export default function Page(){
     const[statusFilter, setStatusFilter] = useState('')
     const[pageLimit, setPageLimit] = useState(1)
     const[notification, setNotification] = useState({isMessage:false, isError:false, message:''})
-
-    useEffect(() => {
-        const response = setTimeout(() => {
-            getCableModems(page, {...(nameFilter && {name : nameFilter}), ...(statusFilter && {status: statusFilter})}).then(response => {setCableModems(response.data.documents); setPageLimit(1 + Math.trunc(response.data.count/10))})
-        }, 1000)
-        return () => clearTimeout(response)
-    }, [nameFilter, statusFilter, page])
     
     useEffect(() => {
         const response = setTimeout(() => {
-            setNotification({isMessage:false, isError:false, message:''})
-        }, 6000)
+            getCableModems(page, {...(nameFilter && {name : nameFilter}), ...(statusFilter && {status: statusFilter})}).then(response => {setCableModems(response.data.documents); setPageLimit(1 + Math.trunc(response.data.count/10))})
+        }, 300)
         return () => clearTimeout(response)
-    }, [notification])
-
+    }, [nameFilter, statusFilter, page, notification])
+    
     useEffect(() => {
-        getCableModems(page, {...(nameFilter && {name : nameFilter}), ...(statusFilter && {status: statusFilter})}).then(response => {setCableModems(response.data.documents); setPageLimit(1 + Math.trunc(response.data.count/10))})
+        if(notification.isMessage){
+            const response = setTimeout(() => {
+                setNotification({isMessage:false, isError:false, message:''})
+            }, 6000)
+            return () => clearTimeout(response)
+        }
     }, [notification])
-
 
     return(
         <div>
             <section className="flex">
                 <div className="p-4 bg-neutral-800 rounded-lg m-3 min-h-96">
                         <NameFilter onValueChange={setNameFilter}/>
-                        <StatusFilter onValueChange={setStatusFilter}/>
+                        <StatusFilter selectedValue={statusFilter} onValueChange={setStatusFilter}/>
                 </div>
                 <div>
                     <AddCableModemSection setNotification={setNotification}/>
@@ -74,13 +72,16 @@ export default function Page(){
     )
 }
 
-function StatusFilter(props:{onValueChange:(value:string)=>void}){
-    const {onValueChange} = props
-    return(
-        <RadioGroup label="Filter by Status" onValueChange={(value)=>{onValueChange(value)}}>
+function StatusFilter(props:{selectedValue:string, onValueChange:(value:string)=>void}){
+    const {selectedValue, onValueChange} = props
+    return(<div>
+        <RadioGroup label="Filter by Status" color="warning" value={selectedValue} onValueChange={(value)=>{onValueChange(value)}}>
             {cableModemStatusList.map(s=>(<Radio value={s.key} key={s.key}>{s.label}</Radio>))}
         </RadioGroup>
-    );
+        <Button color="default" onClick={(v)=>{onValueChange('')}} className="m-auto flex mt-1">
+            Clean filter
+        </Button>
+    </div>);
 }
 
 function NameFilter(props:{onValueChange:(value:string)=>void}){
@@ -102,15 +103,18 @@ function AddCableModemSection(props:{setNotification:(data:any)=>void}){
 
 function CableModemTable(props:{cableModems: CableModem[],page: number, pageLimit:number, setPage:(page:number)=>void}){
     const {cableModems,page,pageLimit, setPage} = props
+    const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const [selectedItem, setSelectedItem] = useState<CableModem>({_id: 'defaultId',name: 'defaultName'});
     return (
-        <>
-            <Table aria-label="Example static collection table">
+        <div>
+            <DetailedItemModal cableModem={selectedItem} isOpen={isOpen} onOpen={onOpen} onOpenChange={onOpenChange}  />
+            <Table isStriped aria-label="" selectionMode="single" >
                 <TableHeader columns={cableModemTableColumns}>
                     {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                 </TableHeader>
                 <TableBody items={cableModems}>
                     {(item:any) => (
-                        <TableRow key={item._id}>
+                        <TableRow key={item._id} onClick={(e)=> {setSelectedItem(item);onOpen()}}>
                             {(columnKey) => columnKey === 'actions' 
                                 ? (<TableCell className="text-white flex gap-4 items-center">
                                         <ActionButton displayName='edit' id={item._id} name={item.name} description={item.description} date={item.validSince} status={item.status} tags={item.tags} color='primary' onClick={(b:any)=>{putCableModem(item._id, b)}} type={CABLE_MODEM_BUTTON_TYPE.EDIT.value} />
@@ -118,14 +122,14 @@ function CableModemTable(props:{cableModems: CableModem[],page: number, pageLimi
                                     </TableCell>) 
                                 : columnKey === 'status' 
                                     ? (<TableCell className="text-white"><Chip variant="faded" color={getStatusColor(item[columnKey])}>{item[columnKey]}</Chip></TableCell>)
-                                    : (<TableCell className="text-white">{item[columnKey]}</TableCell>)
+                                    : (<TableCell className="text-white">{columnKey === 'validSince' ? formatDate(parseAbsoluteToLocal(item[columnKey])) : item[columnKey]}</TableCell>)
                             }
                         </TableRow>
                     )}
                 </TableBody>
             </Table>
             <Pagination className="p-4 justify-center flex" total={pageLimit} initialPage={page}  onChange={(page)=>{setPage(page)}}/>
-        </>
+        </div>
     )
 }
 
@@ -214,7 +218,7 @@ function DeleteModal(props:{isOpen:boolean, onOpen:()=>void, onOpenChange:()=>vo
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 text-white">Delete Item</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1 text-white">Delete item</ModalHeader>
               <ModalBody className="text-white">
                   Are you sure that you want to delete the item ?
               </ModalBody>
@@ -223,9 +227,40 @@ function DeleteModal(props:{isOpen:boolean, onOpen:()=>void, onOpenChange:()=>vo
                   Cancel
                 </Button>
                 <Button color="danger" onPress={()=>{onClick();onClose()}}>
-                  Delete
+                  Confirm
                 </Button>
               </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    )
+}
+
+function DetailedItemModal(props:{cableModem: CableModem, isOpen:boolean, onOpen:()=>void, onOpenChange:()=>void, }){
+    const {cableModem, isOpen, onOpenChange} = props;
+    return(
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {() => (
+            <>
+                <ModalHeader className="flex flex-col gap-1 text-white">{cableModem.name}</ModalHeader>
+                <ModalBody>
+                    <div className="m-auto flex"><Image isBlurred={true} src={routerHardCoded.src} alt="router Pic" width='300px'/></div>
+                    <Input variant="bordered" label="Item id" className="text-white" value={cableModem._id} isDisabled />
+                    <Input variant="bordered" label="Description" className="text-white" value={cableModem.description} isDisabled />
+                    <DatePicker variant="bordered" label="Valid Since" className="text-white" value={cableModem.validSince ? parseAbsoluteToLocal(cableModem.validSince) : parseAbsoluteToLocal("2021-11-07T07:45:00Z")} isDisabled/>
+                    <Input variant="bordered" label="Status" className="text-white" value={cableModem.status} isDisabled color={getStatusColor(cableModem.status)} />
+                    <div className=" text-neutral-500 text-xs border-2 rounded-xl border-neutral-800 p-2">
+                        <div className="p-1">Tags</div>
+                        {cableModem.tags?.map(t=>(<Chip className="m-1" key={t}>{t}</Chip>))}
+                    </div>
+                    <div className="">
+                        <Button className="flex m-auto" color="danger" onPress={()=>{console.log('borrando : ' + cableModem._id)}}>
+                            Delete item
+                        </Button>
+                    </div>
+                </ModalBody>
             </>
           )}
         </ModalContent>

@@ -5,7 +5,7 @@ export function formatDate(date: ZonedDateTime): string{
     return (date.day + '-' + date.month + '-' + date.year).toString();
 }
 
-export function getStatusColor(statusId:string):'success'|'warning'|'danger'|'default'{
+export function getStatusColor(statusId:string|any):'success'|'warning'|'danger'|'default'{
     switch(statusId){
         case CABLE_MODEM_STATUS.ACTIVE.value :
             return 'success'

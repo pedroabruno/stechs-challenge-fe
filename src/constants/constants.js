@@ -1,3 +1,7 @@
+export const tabs = [
+    {name:'Cable Modems', link:'/cableModems'},
+    {name:'About', link:'/about'}]
+
 export const cableModemTableColumns = [
     {
       key: "name",
