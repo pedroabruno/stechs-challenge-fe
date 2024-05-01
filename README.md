@@ -49,13 +49,11 @@ Para levantar la app localmente correr el siguiente comando.
 
 Para utilizar el backend local se debe
     
-    - Clonar el siguiente repositorio : [repo-backend](https://github.com/pedroabruno/stechs-challenge-be)
+-  Clonar el siguiente repositorio : [repo-backend](https://github.com/pedroabruno/stechs-challenge-be)
+-  Levantar el backend localmente y copiar la URL(ruta+puerto)
+-  En el archivo src/api/axios.ts modificar la variable `URL_BASE` por la URL del backend
 
-    - Levantar el backend localmente y copiar la URL(ruta+puerto)
-
-    - En el archivo src/api/axios.ts modificar la variable `URL_BASE` por la URL del backend
-
-
+Luego arrojar el siguiente comando en la raiz del proyecto.
 ```bash
 npm run dev
 ```
