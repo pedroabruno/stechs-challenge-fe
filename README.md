@@ -96,6 +96,7 @@ Para realizar un deploy a Vercel solamente es necesario actualizar el branch mai
 
 ## Roadmap
 
+- La db no trabaja de manera totalmente sincronica por lo tanto podriamos cambiarla por una db postgres
 - Los strings pasaran a cargarse de un archivo de configuracion dependiendo del idioma elegido
 - Se agregara light mode
 - Se cambiaran los tipos de datos **any** a tipos de datos explicitos 

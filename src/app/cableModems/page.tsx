@@ -17,7 +17,7 @@ export default function Page(){
     useEffect(() => {
         const response = setTimeout(() => {
             getCableModems(page, {...(nameFilter && {name : nameFilter}), ...(statusFilter && {status: statusFilter})}).then(response => {setCableModems(response.data.documents); setPageLimit(1 + Math.trunc((response.data.count-1)/10) );})
-        }, 300)
+        }, 200)
         setIsDataUpdated(true)
         return () => clearTimeout(response)
     }, [nameFilter, statusFilter, page, isDataUpdated])

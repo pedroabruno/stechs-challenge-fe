@@ -5,10 +5,9 @@ import { getStatusColor, formatDate } from "@/scripts/utils";
 import { parseAbsoluteToLocal } from "@internationalized/date";
 import { Chip, Pagination, Spinner } from "@nextui-org/react";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/table";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DeleteItemModal, DetailedItemModal, EditItemModal } from "src/components/table/modals";
 import { ActionButton, CreateItemButton } from  "src/components/table/buttons";
-import toast, { Toaster } from 'react-hot-toast';
 
 export function CableModemTable(props:{cableModems: CableModem[],page: number, pageLimit:number, setPage:(page:number)=>void, setIsDataUpdated:(page:boolean)=>void, notify:(promise:any)=>void}){
     const {cableModems,page,pageLimit, setPage, setIsDataUpdated, notify} = props
@@ -53,7 +52,7 @@ export function AddCableModemSection(props:{setIsDataUpdated:(data:any)=>void, n
     const [isEditItemModalOpen, setIsEditItemModalOpen] = useState(false)
     return(
         <section>
-                {isEditItemModalOpen && <EditItemModal isModalOpen={isEditItemModalOpen} onOpenChange={()=>{setIsEditItemModalOpen(v=>!v)}} onCreate={(v)=>{notify(createCableModems(v));setIsDataUpdated(false)}} mode='create'/>}
+                {isEditItemModalOpen && <EditItemModal isModalOpen={isEditItemModalOpen} onOpenChange={()=>{setIsEditItemModalOpen(v=>!v)}} onCreate={(v)=>{notify(createCableModems(v).then(v=>{setIsDataUpdated(false)}))}} mode='create'/>}
                 <div className="flex text-white font-bold">
                     <h1 className="text-2xl"> Cable Modems </h1>
                     <CreateItemButton onClick={()=>{setIsEditItemModalOpen(v=>!v)}}/>
