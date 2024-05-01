@@ -42,15 +42,17 @@ Este comando bajara e instalara las dependencias del proyecto entre las cuales e
 
 Por defecto la app corre contra un backend en **Node** hosteado en **Vercel** y con una db en **Mongo** hosteada en **Mongo Atlas** . 
 
-Para levantar la app localmente correr el siguiente comando.
+Para levantar la app utilizando este configuracion correr el comando
+```bash
+npm run dev
+```
 
-
-## Running the app using sing local backend 
+## Running the app using local backend 
 
 Para utilizar el backend local se debe
     
 -  Clonar el siguiente repositorio : [repo-backend](https://github.com/pedroabruno/stechs-challenge-be)
--  Levantar el backend localmente y copiar la URL(ruta+puerto)
+-  Levantar el backend localmente y copiar la URL del mismo (ruta+puerto)
 -  En el archivo src/api/axios.ts modificar la variable `URL_BASE` por la URL del backend
 
 Luego arrojar el siguiente comando en la raiz del proyecto.
